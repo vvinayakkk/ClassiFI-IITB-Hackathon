@@ -76,7 +76,7 @@ In the second iteration, we expanded the number of categories to **12** and incl
 - **Recall**: 0.81 🔁
 
 **Stage 3: Increasing Granularity** 🔍  
-In this iteration, we expanded the classification task to **24 categories**. This included adding more specific roles, such as "Data Engineer" and "Machine Learning Specialist." The model began recognizing more nuanced relationships between sections of the resumes (e.g., matching the skills section with relevant job titles).
+In this iteration, we expanded the classification task to ** 18 categories**. This included adding more specific roles, such as "Data Engineer" and "Machine Learning Specialist." The model began recognizing more nuanced relationships between sections of the resumes (e.g., matching the skills section with relevant job titles).
 
 **Result:**  
 - **Accuracy**: **88.6%** 📊  
@@ -84,7 +84,7 @@ In this iteration, we expanded the classification task to **24 categories**. Thi
 - **Recall**: 0.85 🔁
 
 **Stage 4: Advanced Specialization** 🎓  
-By Stage 4, we had refined our categories further, reaching **48 specialized roles**. The model learned to detect even finer distinctions, such as differentiating between "Frontend Developer" and "UI/UX Designer." The BERT model was now fully capable of handling resumes with complex structures and diverse content.
+By Stage 4, we had refined our categories further, reaching **24 specialized roles**. The model learned to detect even finer distinctions, such as differentiating between "Frontend Developer" and "UI/UX Designer." The BERT model was now fully capable of handling resumes with complex structures and diverse content.
 
 **Result:**  
 - **Accuracy**: **89.9%** 📊  
