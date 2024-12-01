@@ -76,7 +76,7 @@ In the second iteration, we expanded the number of categories to **12** and incl
 - **Recall**: 0.81 🔁
 
 **Stage 3: Increasing Granularity** 🔍  
-In this iteration, we expanded the classification task to ** 18 categories**. This included adding more specific roles, such as "Data Engineer" and "Machine Learning Specialist." The model began recognizing more nuanced relationships between sections of the resumes (e.g., matching the skills section with relevant job titles).
+In this iteration, we expanded the classification task to **18 categories**. This included adding more specific roles, such as "Data Engineer" and "Machine Learning Specialist." The model began recognizing more nuanced relationships between sections of the resumes (e.g., matching the skills section with relevant job titles).
 
 **Result:**  
 - **Accuracy**: **88.6%** 📊  
