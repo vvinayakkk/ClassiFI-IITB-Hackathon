@@ -116,7 +116,7 @@ const Dashboard = () => {
           status: `Classified as: ${results.finalClassification}`,
           time: "Just now",
           confidence: results.overallConfidence,
-          skills: ["JavaScript", "React", "Node.js"] // You might want to get this from the API
+          skills: ["JavaScript", "React", "Node.js"]
         };
         
         // Store the file in the Map
