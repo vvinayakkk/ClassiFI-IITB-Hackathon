@@ -8,7 +8,7 @@ import RecentUploads from '@/components/dashboard/RecentUploads';
 import ResumeProcessingLoader from '@/components/ResumeProcessingLoader';
 import StatsGrid from '@/components/dashboard/StatsGrid';
 import { NOTIFICATIONS, RECENT_UPLOADS, PROCESSING_RESULTS } from '@/constants/dashboardData';
-import Analytics from '@/components/Analytics';
+import AnalyticsPage from '@/pages/AnalyticsPage';
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -153,7 +153,7 @@ const Dashboard = () => {
 
   const renderAnalytics = () => (
     <div>
-      <Analytics />
+      <AnalyticsPage />
     </div>
   );
 

@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-const ScrollableSidebarApp = () => {
-  const [classes, setClasses] = useState(['Class 1']);
+const TrainingPage = () => {
+  const [classes, setClasses] = useState([]);
   const [csvFile, setCSVFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [downloadCSVEnabled, setDownloadCSVEnabled] = useState(false);
+  const [currentStage, setCurrentStage] = useState(-1);
+
+  const stageClasses = [
+    ["Technology", "Space", "Medical", "Sport", "Entertainment"],
+    ["Historical", "Food", "Politics", "Business", "Graphics"],
+    ["Technology", "Space", "Medical", "Sport", "Entertainment", "Historical", "Food", "Politics", "Business", "Graphics"],
+    ["AI", "IoT", "Blockchain", "Astronomy", "Space Exploration", "Healthcare", "Pharmaceuticals", "Team Sports", "Individual Sports", "Movies", "Music", "Ancient History", "Modern History", "Culinary Arts", "Nutrition", "Government Policies", "Political Analysis", "Finance", "Corporate Strategies", "3D Design", "Visual Arts"]
+  ];
 
   const handleCSVFileChange = (event) => {
     setCSVFile(event.target.files[0]);
@@ -13,11 +21,15 @@ const ScrollableSidebarApp = () => {
   const handleStart = async () => {
     if (!csvFile) return;
     setIsLoading(true);
+
     try {
-      // Make API call to train model
-      await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulating API call
-      setClasses(['rcucur 1', 'class 2', 'class 3', 'class 4', 'class 5', 'class 6']);
-      setDownloadCSVEnabled(true);
+      const nextStage = currentStage + 1;
+      if (nextStage < stageClasses.length) {
+        setCurrentStage(nextStage);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setClasses(prev => [...prev, ...stageClasses[nextStage]]);
+        setDownloadCSVEnabled(true);
+      }
     } catch (error) {
       console.error('Error training model:', error);
     } finally {
@@ -42,18 +54,18 @@ const ScrollableSidebarApp = () => {
   return (
     <div className="flex h-screen bg-gray-900">
       {/* Sidebar */}
-      <div className="w-72 bg-gray-800 shadow-xl">
+      <div className="w-72 bg-gray-800 shadow-xl flex flex-col">
         <div className="p-5 border-b border-gray-700">
           <h2 className="text-xl text-white font-bold">Model Configuration</h2>
           <p className="text-sm text-gray-400 mt-1">Define your classification classes</p>
         </div>
-        <div className="p-4">
+        <div className="p-4 flex-1 overflow-y-auto scrollbar-thin scrollbar-track-gray-700/30 scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-white font-bold">Classes</h3>
               <p className="text-xs text-gray-400 mt-1">{classes.length} classes defined</p>
             </div>
-            <button 
+            <button
               onClick={handleAddClass}
               className="text-sm bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-3 py-1.5 rounded-full font-medium transition-all"
             >
@@ -85,7 +97,7 @@ const ScrollableSidebarApp = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700 hover:scrollbar-thumb-gray-600">
         <div className="p-8">
           <div className="mb-8">
             <div className="text-gray-400 text-sm mb-2">Dashboard / Training</div>
@@ -103,7 +115,7 @@ const ScrollableSidebarApp = () => {
                   >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <svg className="w-8 h-8 mb-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
                       </svg>
                       <p className="mb-2 text-sm text-gray-400">
                         <span className="font-semibold">Click to upload</span> or drag and drop
@@ -125,9 +137,8 @@ const ScrollableSidebarApp = () => {
                 <button
                   onClick={handleStart}
                   disabled={!csvFile}
-                  className={`w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all ${
-                    !csvFile ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02]'
-                  }`}
+                  className={`w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all ${!csvFile ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02]'
+                    }`}
                 >
                   {isLoading ? 'Training in Progress...' : 'Start Training'}
                 </button>
@@ -166,4 +177,4 @@ const ScrollableSidebarApp = () => {
   );
 };
 
-export default ScrollableSidebarApp;
+export default TrainingPage;

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
-const Analytics = () => {
+const AnalyticsPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const rawData = [120, 120, 118, 118, 118, 118, 118, 117, 117, 116, 115, 115,
         115, 112, 111, 110, 107, 103, 102, 97, 96, 63, 36, 22];
@@ -128,4 +128,4 @@ const Analytics = () => {
     );
 };
 
-export default Analytics;
+export default AnalyticsPage;

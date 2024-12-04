@@ -1,18 +1,18 @@
 import { Routes, Route } from 'react-router-dom';
-import Dashboard from "./pages/dashboard";
-import LandingPage from "./pages/landingPage";
-import Analytics from './components/Analytics';
+import Dashboard from "./pages/DashboardPage";
+import LandingPage from "./pages/LandingPage";
+import TrainingPage from './pages/TrainingPage';
 import DetailedAnalysis from './pages/DetailedAnalysis';
-import Training from './components/dashboard/Training';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 function App() {
   return (
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/train" element={<TrainingPage />} />
         <Route path="/dashboard" element={<Dashboard />} />  
-        <Route path="/analytics" element={<Analytics />} />  
+        <Route path="/analytics" element={<AnalyticsPage />} />  
         <Route path="/moreanalysis/:uploadId" element={<DetailedAnalysis />} />
-        <Route path="/training" element={<Training />} />
       </Routes>
   )
 }
