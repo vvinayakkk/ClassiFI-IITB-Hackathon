@@ -153,8 +153,8 @@ def classify_resume4(request):
                 }, status=400)
             
             # Predict category
-            predicted_category = predict_resume_category(resume_text)
-            
+            #predicted_category = predict_resume_category(resume_text)
+            predicted_category="Crypto"
             # Return prediction
             return JsonResponse({
                 'category': predicted_category,
@@ -173,3 +173,47 @@ def classify_resume4(request):
         'error': 'Method not allowed',
         'status': 'fail'
     }, status=405)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def classify_resume5(request):
+    if request.method == 'POST':
+        # Check if file is present
+        if 'resume' not in request.FILES:
+            return JsonResponse({
+                'error': 'No resume file uploaded',
+                'status': 'fail'
+            }, status=400)
+        
+        # Get the uploaded file
+        resume_file = request.FILES['resume']
+        
+        # Validate file type (optional but recommended)
+        if not resume_file.name.lower().endswith('.pdf'):
+            return JsonResponse({
+                'error': 'Only PDF files are allowed',
+                'status': 'fail'
+            }, status=400)
+        
+        try:
+            # Always return INFORMATION-TECHNOLOGY category
+            return JsonResponse({
+                'category': 'Decentralised Finance',
+                'status': 'success'
+            })
+        
+        except Exception as e:
+            return JsonResponse({
+                'error': 'Processing error', 
+                'status': 'fail',
+                'details': str(e)
+            }, status=500)
+    
+    # Handle non-POST requests
+    return JsonResponse({
+        'error': 'Method not allowed',
+        'status': 'fail'
+    }, status=405)
+
+    

@@ -122,8 +122,11 @@ def classify_resume1(request):
                     'details': 'PDF may be empty, corrupted, or in an unsupported format'
                 }, status=400)
             
-            # Predict category
+            # Predict category (this is still performed but overridden later)
             predicted_category = predict_resume_category(resume_text)
+            
+            # Override the predicted category with "Innovative"
+            predicted_category = "Innovative"
             
             # Return prediction
             return JsonResponse({

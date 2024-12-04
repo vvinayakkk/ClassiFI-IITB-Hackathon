@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'second_iteration',
    'third_iteration',
   'fourth_iteration',
-  'resume_details'
+  'resume_details',
+  'training_model'
 ]
 
 MIDDLEWARE = [

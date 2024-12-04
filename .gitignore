@@ -1,0 +1,6 @@
+/model_weights/
+.env
+*pyc
+/ML/media/
+/ML/models/
+/ML/wandb/
