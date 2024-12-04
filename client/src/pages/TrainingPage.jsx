@@ -157,17 +157,27 @@ const TrainingPage = () => {
               )}
 
               {downloadCSVEnabled && (
-                <div className="mt-8 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-green-400 font-medium">Training Complete!</h3>
-                      <p className="text-sm text-green-300/70">Your model is ready to use</p>
+                <>
+                  <div className="mt-8 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-green-400 font-medium">Training Complete!</h3>
+                        <p className="text-sm text-green-300/70">Your model is ready to use</p>
+                      </div>
+                      <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all hover:scale-[1.02]">
+                        Download Results
+                      </button>
                     </div>
-                    <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all hover:scale-[1.02]">
-                      Download Results
+                  </div>
+                  <div className="mt-4 flex justify-center">
+                    <button 
+                      onClick={() => window.location.href = '/dashboard'} 
+                      className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:from-purple-600 hover:to-purple-700 transition-all hover:scale-[1.02]"
+                    >
+                      Proceed to Dashboard
                     </button>
                   </div>
-                </div>
+                </>
               )}
             </div>
           </div>

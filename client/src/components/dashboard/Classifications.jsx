@@ -9,10 +9,10 @@ const Classifications = () => {
   const getCategoryDetails = (category) => CATEGORY_DETAILS[category] || {
     totalPDFs: 0,
     averageConfidence: 0,
-    topSkills: [],
-    averageExperience: "N/A",
+    commonKeywords: [],
+    documentTypes: "N/A",
     description: "No detailed information available.",
-    keyResponsibilities: []
+    typicalContent: []
   };
 
   return (
@@ -68,16 +68,18 @@ const Classifications = () => {
                           <h3 className="text-lg font-semibold mb-4">Category Insights</h3>
                           <div className="space-y-4">
                             <div className="bg-gray-50 p-4 rounded-lg">
-                              <p className="text-sm text-gray-600">Top Skills</p>
+                              <p className="text-sm text-gray-600">Common Keywords</p>
                               <div className="flex flex-wrap gap-2 mt-2">
-                                {details.topSkills.map(skill => (
+                                {details.commonKeywords?.map(keyword => (
+                                  <Badge key={keyword} variant="secondary">{keyword}</Badge>
+                                )) || details.topSkills?.map(skill => (
                                   <Badge key={skill} variant="secondary">{skill}</Badge>
                                 ))}
                               </div>
                             </div>
                             <div className="bg-gray-50 p-4 rounded-lg">
-                              <p className="text-sm text-gray-600">Average Professional Experience</p>
-                              <p className="text-xl font-bold">{details.averageExperience}</p>
+                              <p className="text-sm text-gray-600">Document Types</p>
+                              <p className="text-xl font-bold">{details.documentTypes || details.averageExperience}</p>
                             </div>
                           </div>
                         </div>
@@ -87,10 +89,10 @@ const Classifications = () => {
                             <p>{details.description}</p>
                           </div>
                           <div className="bg-gray-50 p-4 rounded-lg mt-4">
-                            <h3 className="text-lg font-semibold mb-2">Key Responsibilities</h3>
+                            <h3 className="text-lg font-semibold mb-2">Typical Content</h3>
                             <ul className="list-disc list-inside">
-                              {details.keyResponsibilities.map((resp, index) => (
-                                <li key={index} className="text-sm">{resp}</li>
+                              {(details.typicalContent || details.keyResponsibilities)?.map((item, index) => (
+                                <li key={index} className="text-sm">{item}</li>
                               ))}
                             </ul>
                           </div>
