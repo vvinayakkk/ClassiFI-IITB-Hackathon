@@ -12,6 +12,16 @@ from django.core.files.storage import default_storage
 import os
 import datetime
 import shutil
+import os
+import PyPDF2
+import docx
+import pandas as pd
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
 
 
 # Machine Learning Imports
@@ -465,6 +475,208 @@ def predict_single_document_view(request):
 
         except ValueError as ve:
             # Specific error if model is not trained
+            return JsonResponse({'error': str(ve)}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+
+def extract_text_from_file(uploaded_file):
+    """
+    Extract text from various file types using built-in libraries
+    """
+    file_extension = os.path.splitext(uploaded_file.name)[1].lower()
+
+    try:
+        if file_extension == '.txt':
+            return uploaded_file.read().decode('utf-8')
+        
+        elif file_extension == '.pdf':
+            pdf_reader = PyPDF2.PdfReader(uploaded_file)
+            text = ''
+            for page in pdf_reader.pages:
+                text += page.extract_text() + '\n'
+            return text
+        
+        elif file_extension in ['.docx', '.doc']:
+            doc = docx.Document(uploaded_file)
+            return '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+        
+        elif file_extension == '.csv':
+            df = pd.read_csv(uploaded_file)
+            return df.to_string()
+        
+        elif file_extension == '.json':
+            return uploaded_file.read().decode('utf-8')
+        
+        else:
+            raise ValueError(f"Unsupported file type: {file_extension}")
+    
+    except Exception as e:
+        raise ValueError(f"Error extracting text: {str(e)}")
+@csrf_exempt
+def comprehensive_document_analysis_view(request):
+    """
+    Comprehensive document analysis using Gemini with structured JSON response
+    """
+    if request.method == 'POST':
+        try:
+            # Get uploaded file
+            uploaded_file = request.FILES.get('file')
+            if not uploaded_file:
+                return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+            # Extract text
+            document_text = extract_text_from_file(uploaded_file)
+
+            # Truncate text if too long (Gemini has token limits)
+            MAX_TOKENS = 10000
+            document_text = document_text[:MAX_TOKENS]
+
+            # Initialize Gemini model
+            api_key = os.environ.get('GOOGLE_API_KEY')
+            if not api_key:
+                return JsonResponse({'error': 'Google API key not configured'}, status=500)
+
+            llm = ChatGoogleGenerativeAI(
+                model="gemini-pro",
+                temperature=0.3,
+                max_tokens=2048,
+                api_key=api_key
+            )
+
+            # Comprehensive Analysis Prompt
+            comprehensive_prompt = PromptTemplate(
+                input_variables=["document_text"],
+                template="""Perform a comprehensive multi-dimensional analysis of the following document, 
+                returning a STRICTLY STRUCTURED JSON response with the following keys:
+
+1. document_overview: 
+   - type: string (document classification)
+   - purpose: string (primary purpose)
+   - key_themes: list of strings
+
+2. content_structure:
+   - major_sections: list of strings
+   - writing_style: string
+   - tone: string
+   - complexity: string (low/medium/high)
+
+3. key_insights:
+   - top_points: list of strings
+   - critical_takeaways: list of strings
+   - potential_implications: list of strings
+
+4. linguistic_analysis:
+   - vocabulary_complexity: string (basic/advanced/technical)
+   - sentence_structure: string
+   - readability_score: number (0-100)
+
+5. contextual_classification:
+   - suggested_domain: string
+   - target_audience: string
+   - professional_context: string
+
+6. sentiment_analysis:
+   - overall_sentiment: string (positive/negative/neutral)
+   - emotional_undertones: list of strings
+   - sentiment_ratio: number (-1 to 1)
+
+7. potential_use_cases:
+   - recommended_applications: list of strings
+   - relevant_industries: list of strings
+   - suggested_actions: list of strings
+
+Analyze the document: {document_text}
+
+Return ONLY a valid JSON response with these exact keys and corresponding structured data."""
+            )
+
+            # Create analysis chain
+            analysis_chain = LLMChain(llm=llm, prompt=comprehensive_prompt)
+
+            # Perform analysis
+            analysis_result = analysis_chain.run(document_text)
+
+            # Enhanced JSON parsing with multiple fallback strategies
+            def parse_json_safely(json_str):
+                # Remove any text before and after JSON
+                import re
+                json_match = re.search(r'\{.*\}', json_str, re.DOTALL)
+                if json_match:
+                    json_str = json_match.group(0)
+                
+                # Try parsing with multiple approaches
+                try:
+                    # First, standard parsing
+                    return json.loads(json_str)
+                except json.JSONDecodeError:
+                    try:
+                        # Try removing trailing/leading whitespace
+                        return json.loads(json_str.strip())
+                    except:
+                        try:
+                            # Use ast for more lenient parsing
+                            import ast
+                            return ast.literal_eval(json_str)
+                        except:
+                            # Final fallback to predefined structure
+                            return {
+                                "document_overview": {
+                                    "type": "Unable to analyze",
+                                    "purpose": "Analysis failed",
+                                    "key_themes": ["N/A"]
+                                },
+                                "content_structure": {
+                                    "major_sections": ["Unable to determine"],
+                                    "writing_style": "Unknown",
+                                    "tone": "Neutral",
+                                    "complexity": "Medium"
+                                },
+                                "key_insights": {
+                                    "top_points": ["Analysis could not be completed"],
+                                    "critical_takeaways": ["Please review document manually"],
+                                    "potential_implications": ["No implications determined"]
+                                },
+                                "linguistic_analysis": {
+                                    "vocabulary_complexity": "Unknown",
+                                    "sentence_structure": "Unable to assess",
+                                    "readability_score": 0
+                                },
+                                "contextual_classification": {
+                                    "suggested_domain": "Unclassified",
+                                    "target_audience": "General",
+                                    "professional_context": "Not specified"
+                                },
+                                "sentiment_analysis": {
+                                    "overall_sentiment": "Neutral",
+                                    "emotional_undertones": ["N/A"],
+                                    "sentiment_ratio": 0
+                                },
+                                "potential_use_cases": {
+                                    "recommended_applications": ["Manual review recommended"],
+                                    "relevant_industries": ["Not determined"],
+                                    "suggested_actions": ["Consult domain expert"]
+                                }
+                            }
+
+            # Parse the analysis result
+            parsed_analysis = parse_json_safely(analysis_result)
+
+            # Prepare response
+            return JsonResponse({
+                'message': 'Document analysis completed successfully',
+                'filename': uploaded_file.name,
+                'analysis': parsed_analysis,
+                'file_details': {
+                    'original_name': uploaded_file.name,
+                    'text_length': len(document_text)
+                }
+            })
+
+        except ValueError as ve:
             return JsonResponse({'error': str(ve)}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
