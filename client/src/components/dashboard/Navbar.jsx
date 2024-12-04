@@ -15,7 +15,7 @@ const Navbar = ({ setActiveTab }) => {
               className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text cursor-pointer"
               onClick={() => setActiveTab('dashboard')}
             >
-              ResumeAI
+              ClassifyMe.ai
             </h1>
             <button 
               className="sm:hidden p-2 hover:bg-gray-100 rounded-lg"
@@ -71,7 +71,7 @@ const Navbar = ({ setActiveTab }) => {
             <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
               <User className="h-5 w-5 text-white" />
             </div>
-            <span className="text-sm font-medium">Admin</span>
+            <span className="text-sm font-medium"></span>
           </button>
         </div>
       </div>

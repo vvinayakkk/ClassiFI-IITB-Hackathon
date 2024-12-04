@@ -15,6 +15,7 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showResults, setShowResults] = useState(false);  // Add this new state
   const [processingResults, setProcessingResults] = useState(PROCESSING_RESULTS);
   const [recentUploads, setRecentUploads] = useState(RECENT_UPLOADS);
   const [selectedUpload, setSelectedUpload] = useState(null);
@@ -71,6 +72,7 @@ const Dashboard = () => {
 
       setError(null);
       setIsProcessing(true);
+      setShowResults(false);
       const results = {
         modelResponses: [],
         finalClassification: '',
@@ -104,7 +106,7 @@ const Dashboard = () => {
 
         results.finalClassification = mostCommon;
         results.overallConfidence = Math.floor(
-          results.modelResponses.reduce((acc, curr) => acc + curr.confidence, 0) / 4
+          results.modelResponses.reduce((acc, curr) => acc + curr.confidence, 0) / 5
         );
 
         // Update uploads list
@@ -124,13 +126,18 @@ const Dashboard = () => {
         
         setRecentUploads(prev => [newUpload, ...prev]);
         setProcessingResults(results);
+        setShowResults(true);  // Set this to true after successful processing
       } catch (error) {
         setError(error.message);
         setProcessingResults(null);
       } finally {
         setTimeout(() => {
           setIsProcessing(false);
-          // Clear error after 5 seconds
+          // Keep showing results for 4 more seconds
+          setTimeout(() => {
+            setShowResults(false);
+          }, 4000);
+          // Clear error after 5 seconds if there is one
           if (error) {
             setTimeout(() => setError(null), 5000);
           }
@@ -209,7 +216,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <ResumeProcessingLoader
-        isLoading={isProcessing}
+        isLoading={isProcessing || showResults}
         modelResults={processingResults}
         error={error}
       />

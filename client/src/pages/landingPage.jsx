@@ -8,6 +8,7 @@ const LandingPage = () => {
   const mountRef = useRef(null);
   const navigate = useNavigate();
   const [selectedStep, setSelectedStep] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     // Three.js background animation setup
@@ -65,6 +66,30 @@ const LandingPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (selectedStep > 0) {
+      const targetProgress = (selectedStep / (steps.length - 1)) * 100;
+      const duration = 1000; // 1 second animation
+      const startTime = Date.now();
+      const startProgress = progress;
+
+      const animate = () => {
+        const currentTime = Date.now();
+        const elapsed = currentTime - startTime;
+        
+        if (elapsed < duration) {
+          const newProgress = startProgress + ((targetProgress - startProgress) * elapsed) / duration;
+          setProgress(newProgress);
+          requestAnimationFrame(animate);
+        } else {
+          setProgress(targetProgress);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    }
+  }, [selectedStep]);
+
   const handleGetStarted = () => {
     navigate('/dashboard');
   };
@@ -92,13 +117,6 @@ const LandingPage = () => {
       details: "Multiple AI models work together to understand context, terminology, and document patterns.",
     },
     {
-      title: "Classify",
-      icon: <CheckCircle className="w-8 h-8" />,
-      color: "from-yellow-500 to-yellow-600",
-      description: "Documents are automatically categorized based on content analysis.",
-      details: "Our classification system uses both pre-defined categories and dynamic learning for accuracy.",
-    },
-    {
       title: "Refine",
       icon: <RefreshCw className="w-8 h-8" />,
       color: "from-red-500 to-red-600",
@@ -106,19 +124,12 @@ const LandingPage = () => {
       details: "Advanced algorithms continuously improve classification accuracy through machine learning.",
     },
     {
-      title: "Organize",
-      icon: <FolderOpen className="w-8 h-8" />,
-      color: "from-indigo-500 to-indigo-600",
-      description: "Documents are systematically organized into relevant categories.",
-      details: "Smart folder structures and tagging systems make document retrieval effortless.",
-    },
-    {
-      title: "Integrate",
-      icon: <Link2 className="w-8 h-8" />,
-      color: "from-pink-500 to-pink-600",
-      description: "Seamlessly integrate with your existing workflow and systems.",
-      details: "API connections and webhooks enable automated document processing pipelines.",
-    },
+      title: "Classify",
+      icon: <CheckCircle className="w-8 h-8" />,
+      color: "from-yellow-500 to-yellow-600",
+      description: "Documents are automatically categorized based on content analysis.",
+      details: "Our classification system uses both pre-defined categories and dynamic learning for accuracy.",
+    }
   ];
 
   return (
@@ -130,7 +141,7 @@ const LandingPage = () => {
           {/* Responsive Navigation */}
           <nav className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-16">
             <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mb-4 sm:mb-0">
-              ResumeAI
+              ClassifyMe.ai
             </div>
             <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-sm sm:text-base">
               <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
@@ -241,21 +252,27 @@ const LandingPage = () => {
 
               {/* Desktop Timeline */}
               <div className="hidden md:block relative">
-                {/* Progress Line - Moved above the steps */}
+                {/* Progress Line - Updated for fewer steps */}
                 <div className="absolute top-10 left-0 right-0 flex items-center">
-                  <div className="w-full h-1 bg-gray-800/50 backdrop-blur-sm mx-10">
+                  <div className="w-full h-2 bg-gray-800/50 backdrop-blur-sm mx-10 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-500 shadow-lg shadow-blue-500/30"
+                      className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-500"
                       style={{ 
-                        width: `${(selectedStep) * (100 / (steps.length - 1))}%`,
-                        transition: 'width 0.5s ease-in-out'
+                        width: `${progress}%`,
+                        boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)',
+                        transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
                       }}
                     />
                   </div>
                 </div>
 
-                {/* Steps */}
-                <div className="relative z-10 grid grid-cols-7 gap-4 md:gap-8 pt-0">
+                {/* Loading percentage display - Updated styling */}
+                <div className="absolute top-0 right-10 text-white font-mono bg-gray-800/50 px-3 py-1 rounded-full text-sm">
+                  {Math.round(progress)}%
+                </div>
+
+                {/* Steps - Update grid columns for fewer steps */}
+                <div className="relative z-10 grid grid-cols-5 gap-4 md:gap-8 pt-0">
                   {steps.map((step, index) => (
                     <motion.div
                       key={step.title}
