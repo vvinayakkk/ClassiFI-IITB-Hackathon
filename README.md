@@ -51,6 +51,7 @@ We also tried **Random Forests**, which offered improved accuracy due to the ens
 After random forests, we tried **SVMs** with a **linear kernel**. While this model performed better than previous attempts, it still did not reach the accuracy levels we were aiming for. The classification score maxed out at **78%**, and the model wasn’t scalable for more granular classification.
 
 ---
+![image](https://github.com/user-attachments/assets/7f2223a7-75c3-421d-8ecb-2c071a5652a9)
 
 ## **Switching to BERT: A Game-Changer** 🎯
 
@@ -61,6 +62,8 @@ After several unsuccessful attempts with traditional machine learning models, we
 - **Contextual Understanding** 🤓: BERT excels at understanding the relationships between words in a sentence, which is crucial for interpreting Documents where context is key (e.g., distinguishing between "Python Developer" and "Data Scientist").
 - **Bidirectional Attention** 🔄: BERT reads the text in both directions (left-to-right and right-to-left), which makes it more effective at capturing context in long and complex sentences—common in Documents.
 - **Pre-trained Knowledge** 🧠: BERT is pre-trained on vast datasets, meaning it already has an understanding of general language patterns, which we could fine-tune on our Document dataset for specific needs.
+
+![Screenshot 2024-12-05 140303](https://github.com/user-attachments/assets/dcdc8434-3463-4cb2-91c2-f5a11b7ee4d3)
 
 # Fine-Tuning BERT: A Dynamic, User-Driven Approach 🛠️
 
@@ -108,6 +111,7 @@ With the final stage, the model is capable of handling **highly specialized and 
 - **F1 Score**: Optimized for each dataset 💯
 
 ---
+![image](https://github.com/user-attachments/assets/3414fcf7-474b-48cc-b748-7f3ebb1fafb5)
 
 ## **Key Advantages of the User-Driven Fine-Tuning Model**:
 - **Dynamic Class Handling**: The model adapts to an unlimited number of classes, making it versatile for various domains.
@@ -121,6 +125,7 @@ With the final stage, the model is capable of handling **highly specialized and 
 Through each iteration, we saw incremental improvements in both classification accuracy and performance metrics. These weren’t just numbers—they were tangible results that reflected the system’s growing ability to understand and categorize Documents.
 
 ---
+![image](https://github.com/user-attachments/assets/d38f791e-31ab-42c0-a8b0-b5cc7aad7747)
 
 
 ## **Why This Approach is Better** 🏆
