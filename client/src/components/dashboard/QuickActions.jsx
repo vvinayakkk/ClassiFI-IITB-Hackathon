@@ -12,7 +12,7 @@ const QuickActions = ({ setActiveTab, handleUploadClick }) => {
           <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-white/20 flex items-center justify-center mb-2 sm:mb-0">
             <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
           </div>
-          <span className="text-sm sm:text-base font-medium text-center sm:text-left">Upload Resume</span>
+          <span className="text-sm sm:text-base font-medium text-center sm:text-left">Upload Document</span>
         </button>
         <button 
           onClick={() => setActiveTab('classifications')}

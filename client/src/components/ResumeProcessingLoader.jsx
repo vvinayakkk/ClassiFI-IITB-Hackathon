@@ -27,7 +27,7 @@ const CheckMarkIcon = () => (
   </motion.svg>
 );
 
-const ResumeProcessingLoader = ({ isLoading, modelResults, error }) => {
+const DocumentProcessingLoader = ({ isLoading, modelResults, error }) => {
   const [currentStage, setCurrentStage] = useState(0);
 
   // Remove the timer-based effects and only use modelResults
@@ -78,7 +78,7 @@ const ResumeProcessingLoader = ({ isLoading, modelResults, error }) => {
           <h2 className={`text-xl font-bold bg-gradient-to-r ${
             error ? 'from-red-600 to-red-500' : 'from-blue-600 to-indigo-600'
           } text-transparent bg-clip-text`}>
-            {error ? 'Processing Error' : 'Processing Resume'}
+            {error ? 'Processing Error' : 'Processing Document'}
           </h2>
           <p className="text-sm text-gray-500">
             {error ? 'An error occurred during processing' : 'AI-powered analysis in progress'}
@@ -192,4 +192,4 @@ const ResumeProcessingLoader = ({ isLoading, modelResults, error }) => {
   );
 };
 
-export default ResumeProcessingLoader;
+export default DocumentProcessingLoader;

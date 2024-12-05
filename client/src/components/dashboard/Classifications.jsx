@@ -19,7 +19,7 @@ const Classifications = () => {
     <Card>
       <CardHeader>
         <CardTitle>Classifications</CardTitle>
-        <CardDescription>View resume classification categories</CardDescription>
+        <CardDescription>View document classification categories</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -47,7 +47,7 @@ const Classifications = () => {
                       <DrawerHeader>
                         <DrawerTitle>{item.category} Classification</DrawerTitle>
                         <DrawerDescription>
-                          Detailed insights into {item.category} resume classification
+                          Detailed insights into {item.category} document classification
                         </DrawerDescription>
                       </DrawerHeader>
                       <div className="grid md:grid-cols-2 gap-6 p-6">

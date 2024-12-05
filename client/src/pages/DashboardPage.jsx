@@ -5,7 +5,7 @@ import Navbar from '@/components/dashboard/Navbar';
 import Notifications from '@/components/dashboard/Notifications';
 import QuickActions from '@/components/dashboard/QuickActions';
 import RecentUploads from '@/components/dashboard/RecentUploads';
-import ResumeProcessingLoader from '@/components/ResumeProcessingLoader';
+import DocumentProcessingLoader from '@/components/ResumeProcessingLoader';
 import StatsGrid from '@/components/dashboard/StatsGrid';
 import { NOTIFICATIONS, RECENT_UPLOADS, PROCESSING_RESULTS } from '@/constants/dashboardData';
 import AnalyticsPage from '@/pages/AnalyticsPage';
@@ -215,7 +215,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <ResumeProcessingLoader
+      <DocumentProcessingLoader
         isLoading={isProcessing || showResults}
         modelResults={processingResults}
         error={error}

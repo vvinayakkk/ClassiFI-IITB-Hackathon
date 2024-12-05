@@ -16,7 +16,7 @@ const RecentUploads = ({ uploads, selectedUpload, onUploadSelect, uploadedFiles 
     <Card>
       <CardHeader>
         <CardTitle>Recent Uploads</CardTitle>
-        <CardDescription>Latest resumes processed by the system</CardDescription>
+        <CardDescription>Latest documents processed by the system</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

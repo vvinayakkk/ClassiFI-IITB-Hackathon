@@ -91,7 +91,7 @@ const LandingPage = () => {
   }, [selectedStep]);
 
   const handleGetStarted = () => {
-    navigate('/dashboard');
+    navigate('/train');
   };
 
   const steps = [
