@@ -67,7 +67,7 @@ const TrainingPage = () => {
       const nextStage = currentStage + 1;
       if (nextStage < stageClasses.length) {
         setCurrentStage(nextStage);
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 5000));
         setClasses(prev => [...prev, ...stageClasses[nextStage]]);
         setPredictedFiles(stagePredictedFiles[nextStage]); // Set stage-specific files
         setDownloadCSVEnabled(true);
@@ -102,7 +102,7 @@ const TrainingPage = () => {
     if (!predictionFile) return;
     setIsPredicting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       setShowPredictionDownload(true);
     } finally {
       setIsPredicting(false);
