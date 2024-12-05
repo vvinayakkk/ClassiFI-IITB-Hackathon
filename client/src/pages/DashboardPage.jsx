@@ -5,7 +5,7 @@ import Navbar from '@/components/dashboard/Navbar';
 import Notifications from '@/components/dashboard/Notifications';
 import QuickActions from '@/components/dashboard/QuickActions';
 import RecentUploads from '@/components/dashboard/RecentUploads';
-import DocumentProcessingLoader from '@/components/ResumeProcessingLoader';
+import DocumentProcessingLoader from '@/components/DocumentProcessingLoader';
 import StatsGrid from '@/components/dashboard/StatsGrid';
 import { NOTIFICATIONS, RECENT_UPLOADS, PROCESSING_RESULTS } from '@/constants/dashboardData';
 import AnalyticsPage from '@/pages/AnalyticsPage';
@@ -22,7 +22,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState(new Map());
 
-  const processResumeWithModel = async (file, modelNumber) => {
+  const processDocumentWithModel = async (file, modelNumber) => {
     const formData = new FormData();
     formData.append('resume', file);
 
@@ -82,7 +82,7 @@ const Dashboard = () => {
       try {
         // Process with all models
         for (let i = 1; i <= 5; i++) {
-          const response = await processResumeWithModel(file, i);
+          const response = await processDocumentWithModel(file, i);
           if (!response) {
             throw new Error(`Processing failed at model ${i}`);
           }

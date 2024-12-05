@@ -8,27 +8,27 @@ export const NOTIFICATIONS = [
 export const RECENT_UPLOADS = [
   {
     id: 1,
-    name: "senior_dev_document.pdf",
-    status: "Classified as: Java Developer",
+    name: "quantum_computing_research.pdf",
+    status: "Classified as: Technologies",
     time: "Just now",
     confidence: 98.2,
-    keywords: ["Java", "Spring Boot", "Microservices"],
+    keywords: ["Quantum", "Computing", "Research"],
   },
   {
     id: 2,
-    name: "project_management_doc.pdf",
-    status: "Classified as: Project Manager",
+    name: "deep_learning_study.pdf",
+    status: "Classified as: AI",
     time: "5 min ago",
-    confidence: 95.7,
-    keywords: ["Agile", "Scrum", "Team Leadership"],
+    confidence: 96.7,
+    keywords: ["Neural Networks", "Deep Learning", "AI Models"],
   },
   {
     id: 3,
-    name: "hr_policy_doc.pdf",
-    status: "Classified as: HR Specialist",
+    name: "space_mission_report.pdf",
+    status: "Classified as: Space-Exploration",
     time: "1 hour ago",
     confidence: 97.1,
-    keywords: ["Recruitment", "Employee Relations", "HR Policy"],
+    keywords: ["Space Mission", "Satellites", "Exploration"],
   },
 ];
 
@@ -48,10 +48,10 @@ export const STATS_CARDS = [
     color: "text-green-600",
   },
   {
-    title: "Job Categories",
+    title: "Categories",
     icon: "Briefcase",
-    value: "15",
-    change: { value: "+2", type: "new" },
+    value: "40",
+    change: { value: "+20", type: "new" },
     color: "text-purple-600",
   },
   {
@@ -89,306 +89,142 @@ export const PROCESSING_RESULTS = {
 };
 
 export const CLASSIFICATION_DATA = [
-  { category: "BUSINESS-DEVELOPMENT", count: 120, icon: "💼" },
-  { category: "INFORMATION-TECHNOLOGY", count: 120, icon: "💻" },
-  { category: "CHEF", count: 118, icon: "👨‍🍳" },
-  { category: "ACCOUNTANT", count: 118, icon: "📊" },
-  { category: "ENGINEERING", count: 118, icon: "🔧" },
-  { category: "ADVOCATE", count: 118, icon: "⚖️" },
-  { category: "FINANCE", count: 118, icon: "💰" },
-  { category: "FITNESS", count: 117, icon: "💪" },
-  { category: "AVIATION", count: 117, icon: "✈️" },
-  { category: "SALES", count: 116, icon: "🤝" },
-  { category: "CONSULTANT", count: 115, icon: "📈" },
-  { category: "BANKING", count: 115, icon: "🏦" },
-  { category: "HEALTHCARE", count: 115, icon: "🩺" },
-  { category: "CONSTRUCTION", count: 112, icon: "🏗️" },
-  { category: "PUBLIC-RELATIONS", count: 111, icon: "📣" },
-  { category: "HR", count: 110, icon: "👥" },
-  { category: "DESIGNER", count: 107, icon: "🎨" },
-  { category: "ARTS", count: 103, icon: "🎭" },
-  { category: "TEACHER", count: 102, icon: "📚" },
-  { category: "APPAREL", count: 97, icon: "👗" },
-  { category: "DIGITAL-MEDIA", count: 96, icon: "📱" },
-  { category: "AGRICULTURE", count: 63, icon: "🌾" },
-  { category: "AUTOMOBILE", count: 36, icon: "🚗" },
-  { category: "BPO", count: 22, icon: "🖥️" },
+  { category: "Technologies", count: 150, icon: "💻" },
+  { category: "AI", count: 145, icon: "🤖" },
+  { category: "Healthcare", count: 140, icon: "🏥" },
+  { category: "Space-Exploration", count: 135, icon: "🚀" },
+  { category: "Business", count: 130, icon: "💼" },
+  { category: "Entertainment", count: 128, icon: "🎬" },
+  { category: "Sports", count: 125, icon: "⚽" },
+  { category: "History", count: 120, icon: "📜" },
+  { category: "Food", count: 118, icon: "🍳" },
+  { category: "Politics", count: 115, icon: "🏛️" },
+  { category: "Graphics", count: 112, icon: "🎨" },
+  { category: "Blockchain", count: 110, icon: "🔗" },
+  { category: "IoT", count: 108, icon: "📱" },
+  { category: "Astronomy", count: 105, icon: "🔭" },
+  { category: "Music", count: 102, icon: "🎵" }
 ];
 
 export const CATEGORY_DETAILS = {
-  "BUSINESS-DEVELOPMENT": {
-    totalPDFs: 120,
-    averageConfidence: 95.5,
-    commonKeywords: ["Strategic Planning", "Business Analysis", "Negotiation"],
-    documentTypes: "7-10 types",
-    description: "Business Development documents focus on growth strategies, market expansion, and business opportunities.",
-    typicalContent: ["Business proposals", "Strategic planning documents", "Market analysis reports"],
-  },
-  "INFORMATION-TECHNOLOGY": {
-    totalPDFs: 120,
-    averageConfidence: 97.2,
-    commonKeywords: ["Software Development", "Cloud Computing", "Cybersecurity"],
-    documentTypes: "5-8 types",
-    description: "IT documentation covers system designs, technical specifications, and software documentation.",
-    typicalContent: ["Technical specifications", "System architecture documents", "Security protocols"],
-  },
-  CHEF: {
-    totalPDFs: 118,
-    averageConfidence: 92.4,
-    topSkills: ["Culinary Arts", "Menu Planning", "Food Safety"],
-    averageExperience: "3-5 years",
-    description: "Chefs are culinary professionals responsible for preparing, cooking, and presenting meals to high standards.",
-    keyResponsibilities: [
-      "Prepare and cook food according to recipes",
-      "Manage kitchen staff and operations",
-      "Ensure compliance with food safety standards",
-    ],
-  },
-  ACCOUNTANT: {
-    totalPDFs: 118,
-    averageConfidence: 96.1,
-    topSkills: ["Financial Reporting", "Taxation", "Budgeting"],
-    averageExperience: "5-7 years",
-    description: "Accountants are responsible for preparing and analyzing financial records, ensuring compliance with regulations.",
-    keyResponsibilities: [
-      "Prepare and examine financial records",
-      "Ensure accuracy and compliance with laws",
-      "Provide financial advice to clients or management",
-    ],
-  },
-  ENGINEERING: {
-    totalPDFs: 118,
-    averageConfidence: 94.7,
-    topSkills: ["Problem-Solving", "Technical Design", "Project Management"],
-    averageExperience: "4-6 years",
-    description: "Engineers apply science and mathematics to solve technical problems and design innovative solutions.",
-    keyResponsibilities: [
-      "Design and develop technical solutions",
-      "Test and evaluate systems or products",
-      "Collaborate with cross-functional teams",
-    ],
-  },
-  ADVOCATE: {
-    totalPDFs: 118,
-    averageConfidence: 93.3,
-    topSkills: ["Legal Research", "Litigation", "Client Advocacy"],
-    averageExperience: "6-8 years",
-    description: "Advocates provide legal representation and advice to clients, ensuring their rights are protected.",
-    keyResponsibilities: [
-      "Represent clients in legal proceedings",
-      "Draft legal documents and contracts",
-      "Conduct legal research and analysis",
-    ],
-  },
-  FINANCE: {
-    totalPDFs: 118,
-    averageConfidence: 95.8,
-    topSkills: ["Financial Analysis", "Investment Management", "Risk Assessment"],
-    averageExperience: "5-8 years",
-    description: "Finance professionals manage financial resources, plan investments, and assess financial risks.",
-    keyResponsibilities: [
-      "Develop financial strategies and plans",
-      "Analyze and interpret financial data",
-      "Advise on investment opportunities",
-    ],
-  },
-  FITNESS: {
-    totalPDFs: 117,
-    averageConfidence: 91.9,
-    topSkills: ["Personal Training", "Nutrition Planning", "Motivational Skills"],
-    averageExperience: "3-5 years",
-    description: "Fitness professionals help clients achieve their health and wellness goals through personalized training and guidance.",
-    keyResponsibilities: [
-      "Create personalized fitness plans",
-      "Provide guidance on exercise techniques",
-      "Motivate clients to achieve fitness goals",
-    ],
-  },
-  AVIATION: {
-    totalPDFs: 117,
-    averageConfidence: 94.5,
-    topSkills: ["Flight Operations", "Aircraft Maintenance", "Safety Procedures"],
-    averageExperience: "5-8 years",
-    description: "Aviation professionals ensure the safe and efficient operation of aircraft and related services.",
-    keyResponsibilities: [
-      "Operate and navigate aircraft",
-      "Perform maintenance and inspections",
-      "Ensure compliance with aviation safety regulations",
-    ],
-  },
-  SALES: {
-    totalPDFs: 116,
-    averageConfidence: 93.2,
-    topSkills: ["Client Relationship", "Negotiation", "Lead Generation"],
-    averageExperience: "2-4 years",
-    description: "Sales professionals identify customer needs, promote products or services, and close deals.",
-    keyResponsibilities: ["Generate and follow up on leads", "Negotiate contracts and agreements", "Achieve sales targets and goals"],
-  },
-  CONSULTANT: {
-    totalPDFs: 115,
-    averageConfidence: 94.6,
-    topSkills: ["Problem-Solving", "Data Analysis", "Client Communication"],
-    averageExperience: "5-7 years",
-    description: "Consultants provide expert advice to help organizations solve problems and achieve goals.",
-    keyResponsibilities: [
-      "Analyze client needs and challenges",
-      "Develop and propose solutions",
-      "Support implementation and change management",
-    ],
-  },
-  BANKING: {
-    totalPDFs: 115,
-    averageConfidence: 96.0,
-    topSkills: ["Financial Services", "Risk Management", "Customer Relations"],
-    averageExperience: "6-8 years",
-    description: "Banking professionals manage financial transactions, customer relationships, and risk assessments.",
-    keyResponsibilities: [
-      "Assist customers with financial services",
-      "Analyze credit and loan applications",
-      "Ensure regulatory compliance",
-    ],
-  },
-  HEALTHCARE: {
-    totalPDFs: 115,
+  "Technologies": {
+    totalPDFs: 150,
     averageConfidence: 96.5,
-    topSkills: ["Patient Care", "Medical Knowledge", "Attention to Detail"],
-    averageExperience: "4-6 years",
-    description: "Healthcare professionals provide medical care and support to patients, ensuring their well-being and recovery.",
-    keyResponsibilities: ["Diagnose and treat illnesses", "Provide patient education and support", "Maintain medical records and reports"],
+    commonKeywords: ["Innovation", "Digital", "Software"],
+    documentTypes: "8-12 types",
+    description: "Documents covering various technological advances and implementations.",
+    typicalContent: ["Technical specifications", "Research papers", "Implementation guides"]
   },
-  CONSTRUCTION: {
-    totalPDFs: 112,
+  "Space": {
+    totalPDFs: 135,
+    averageConfidence: 94.8,
+    commonKeywords: ["Space Missions", "Satellites", "Exploration"],
+    documentTypes: "6-8 types",
+    description: "Documentation related to space exploration and research.",
+    typicalContent: ["Mission reports", "Research findings", "Space technology"]
+  },
+  "Medical": {
+    totalPDFs: 140,
+    averageConfidence: 95.2,
+    commonKeywords: ["Healthcare", "Treatment", "Clinical"],
+    documentTypes: "7-9 types",
+    description: "Medical research and healthcare documentation.",
+    typicalContent: ["Clinical studies", "Medical protocols", "Treatment guidelines"]
+  },
+  "Sport": {
+    totalPDFs: 125,
+    averageConfidence: 93.5,
+    commonKeywords: ["Athletics", "Competition", "Training"],
+    documentTypes: "5-7 types",
+    description: "Sports-related documentation and analysis.",
+    typicalContent: ["Training programs", "Competition reports", "Sports science"]
+  },
+  "Entertainment": {
+    totalPDFs: 128,
     averageConfidence: 92.8,
-    topSkills: ["Blueprint Reading", "Project Management", "Safety Compliance"],
-    averageExperience: "5-7 years",
-    description: "Construction professionals build and manage infrastructure projects, ensuring quality and safety.",
-    keyResponsibilities: [
-      "Plan and oversee construction projects",
-      "Ensure compliance with safety standards",
-      "Manage teams and resources efficiently",
-    ],
+    commonKeywords: ["Media", "Performance", "Production"],
+    documentTypes: "6-8 types",
+    description: "Entertainment industry documentation.",
+    typicalContent: ["Production scripts", "Media analysis", "Industry reports"]
   },
-  "PUBLIC-RELATIONS": {
-    totalPDFs: 111,
-    averageConfidence: 91.7,
-    topSkills: ["Media Relations", "Crisis Management", "Content Creation"],
-    averageExperience: "3-5 years",
-    description: "Public Relations professionals maintain and promote a positive image for organizations and individuals.",
-    keyResponsibilities: [
-      "Develop and execute PR campaigns",
-      "Manage media relations and communication",
-      "Monitor public perception and feedback",
-    ],
+  "Historical": {
+    totalPDFs: 120,
+    averageConfidence: 91.5,
+    commonKeywords: ["History", "Archives", "Documentation"],
+    documentTypes: "5-7 types",
+    description: "Historical documents and research papers.",
+    typicalContent: ["Historical records", "Research papers", "Archive materials"]
   },
-  HR: {
+  "Food": {
+    totalPDFs: 118,
+    averageConfidence: 93.2,
+    commonKeywords: ["Cuisine", "Nutrition", "Recipes"],
+    documentTypes: "4-6 types",
+    description: "Food and culinary documentation.",
+    typicalContent: ["Recipe collections", "Nutritional guides", "Food research"]
+  },
+  "Politics": {
+    totalPDFs: 115,
+    averageConfidence: 90.8,
+    commonKeywords: ["Government", "Policy", "Analysis"],
+    documentTypes: "6-8 types",
+    description: "Political analysis and policy documentation.",
+    typicalContent: ["Policy papers", "Political analysis", "Government documents"]
+  },
+  "Business": {
+    totalPDFs: 130,
+    averageConfidence: 94.5,
+    commonKeywords: ["Strategy", "Management", "Finance"],
+    documentTypes: "7-9 types",
+    description: "Business and corporate documentation.",
+    typicalContent: ["Business plans", "Corporate strategies", "Market analysis"]
+  },
+  "Graphics": {
+    totalPDFs: 112,
+    averageConfidence: 92.7,
+    commonKeywords: ["Design", "Visual", "Creative"],
+    documentTypes: "5-7 types",
+    description: "Graphic design and visual arts documentation.",
+    typicalContent: ["Design specs", "Visual guidelines", "Creative briefs"]
+  },
+  "AI": {
+    totalPDFs: 145,
+    averageConfidence: 95.8,
+    commonKeywords: ["Machine Learning", "Neural Networks", "Deep Learning"],
+    documentTypes: "6-8 types",
+    description: "Artificial Intelligence documentation and research.",
+    typicalContent: ["AI research", "ML models", "Algorithm documentation"]
+  },
+  "IoT": {
+    totalPDFs: 108,
+    averageConfidence: 93.4,
+    commonKeywords: ["Connected Devices", "Sensors", "Smart Systems"],
+    documentTypes: "5-7 types",
+    description: "Internet of Things technology documentation.",
+    typicalContent: ["IoT specifications", "Device protocols", "System architecture"]
+  },
+  "Blockchain": {
     totalPDFs: 110,
     averageConfidence: 94.1,
-    topSkills: ["Recruitment", "Employee Engagement", "Conflict Resolution"],
-    averageExperience: "4-6 years",
-    description: "Human Resources professionals manage employee relations, recruitment, and organizational development.",
-    keyResponsibilities: [
-      "Recruit and onboard employees",
-      "Develop HR policies and strategies",
-      "Handle employee grievances and conflicts",
-    ],
+    commonKeywords: ["Cryptocurrency", "DLT", "Smart Contracts"],
+    documentTypes: "5-7 types",
+    description: "Blockchain technology and cryptocurrency documentation.",
+    typicalContent: ["Technical whitepapers", "Protocol documentation", "Implementation guides"]
   },
-  DESIGNER: {
-    totalPDFs: 107,
-    averageConfidence: 93.8,
-    topSkills: ["Graphic Design", "Creative Thinking", "User Experience"],
-    averageExperience: "3-5 years",
-    description: "Designers create visual concepts and designs to communicate ideas effectively.",
-    keyResponsibilities: ["Develop visual designs and layouts", "Collaborate with clients and teams", "Ensure consistency in branding"],
+  "Astronomy": {
+    totalPDFs: 105,
+    averageConfidence: 92.9,
+    commonKeywords: ["Celestial", "Observatory", "Stars"],
+    documentTypes: "4-6 types",
+    description: "Astronomical research and observation documentation.",
+    typicalContent: ["Research papers", "Observation data", "Astronomical studies"]
   },
-  ARTS: {
-    totalPDFs: 103,
-    averageConfidence: 90.5,
-    topSkills: ["Artistic Skills", "Creativity", "Self-Expression"],
-    averageExperience: "2-4 years",
-    description: "Artists express creativity through various mediums such as painting, sculpture, or performance.",
-    keyResponsibilities: [
-      "Create original artworks",
-      "Showcase art through exhibitions or performances",
-      "Collaborate on creative projects",
-    ],
-  },
-  TEACHER: {
+  "Music": {
     totalPDFs: 102,
-    averageConfidence: 92.7,
-    topSkills: ["Instructional Design", "Classroom Management", "Subject Knowledge"],
-    averageExperience: "5-7 years",
-    description: "Teachers educate and inspire students, preparing them for personal and professional growth.",
-    keyResponsibilities: [
-      "Develop and deliver lesson plans",
-      "Assess and monitor student progress",
-      "Engage students in interactive learning",
-    ],
-  },
-  APPAREL: {
-    totalPDFs: 97,
-    averageConfidence: 89.3,
-    topSkills: ["Fashion Design", "Trend Analysis", "Product Development"],
-    averageExperience: "3-5 years",
-    description: "Apparel professionals design and produce clothing and accessories that align with market trends.",
-    keyResponsibilities: [
-      "Design and develop clothing lines",
-      "Analyze fashion trends and markets",
-      "Manage production and quality control",
-    ],
-  },
-  "DIGITAL-MEDIA": {
-    totalPDFs: 96,
-    averageConfidence: 93.8,
-    topSkills: ["Content Creation", "Social Media Management", "Analytics"],
-    averageExperience: "3-5 years",
-    description:
-      "Digital Media professionals create, manage, and optimize content across various online platforms to engage audiences and drive brand growth.",
-    keyResponsibilities: [
-      "Develop engaging digital content",
-      "Manage social media channels and campaigns",
-      "Analyze performance metrics and optimize strategies",
-    ],
-  },
-
-  AGRICULTURE: {
-    totalPDFs: 63,
-    averageConfidence: 90.5,
-    topSkills: ["Crop Management", "Soil Science", "Sustainable Farming"],
-    averageExperience: "4-6 years",
-    description:
-      "Agriculture professionals specialize in crop production, livestock management, and sustainable farming practices to enhance productivity.",
-    keyResponsibilities: [
-      "Monitor and manage crop and soil health",
-      "Implement sustainable farming practices",
-      "Optimize agricultural techniques for higher yield",
-    ],
-  },
-
-  AUTOMOBILE: {
-    totalPDFs: 36,
-    averageConfidence: 91.7,
-    topSkills: ["Vehicle Maintenance", "Mechanical Engineering", "Diagnostics"],
-    averageExperience: "5-7 years",
-    description:
-      "Automobile professionals ensure the design, maintenance, and efficient operation of vehicles, contributing to the automotive industry's growth.",
-    keyResponsibilities: [
-      "Diagnose and repair vehicle issues",
-      "Design and test automotive systems",
-      "Ensure compliance with safety standards",
-    ],
-  },
-
-  BPO: {
-    totalPDFs: 22,
-    averageConfidence: 89.2,
-    topSkills: ["Customer Support", "Process Optimization", "Communication"],
-    averageExperience: "2-4 years",
-    description:
-      "BPO (Business Process Outsourcing) professionals handle outsourced tasks like customer service, technical support, and back-office operations.",
-    keyResponsibilities: [
-      "Provide customer service and support",
-      "Optimize business processes for efficiency",
-      "Handle client inquiries and resolve issues",
-    ],
-  },
+    averageConfidence: 91.2,
+    commonKeywords: ["Composition", "Performance", "Theory"],
+    documentTypes: "4-6 types",
+    description: "Musical documentation and analysis.",
+    typicalContent: ["Sheet music", "Music theory", "Performance analysis"]
+  }
 };

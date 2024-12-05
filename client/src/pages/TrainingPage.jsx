@@ -6,12 +6,16 @@ const TrainingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [downloadCSVEnabled, setDownloadCSVEnabled] = useState(false);
   const [currentStage, setCurrentStage] = useState(-1);
+  const [isTrainingComplete, setIsTrainingComplete] = useState(false);
+  const [predictionFile, setPredictionFile] = useState(null);
+  const [isPredicting, setIsPredicting] = useState(false);
+  const [showPredictionDownload, setShowPredictionDownload] = useState(false);
 
   const stageClasses = [
-    ["Technology", "Space", "Medical", "Sport", "Entertainment"],
-    ["Historical", "Food", "Politics", "Business", "Graphics"],
-    ["Technology", "Space", "Medical", "Sport", "Entertainment", "Historical", "Food", "Politics", "Business", "Graphics"],
-    ["AI", "IoT", "Blockchain", "Astronomy", "Space Exploration", "Healthcare", "Pharmaceuticals", "Team Sports", "Individual Sports", "Movies", "Music", "Ancient History", "Modern History", "Culinary Arts", "Nutrition", "Government Policies", "Political Analysis", "Finance", "Corporate Strategies", "3D Design", "Visual Arts"]
+    ["Innovative", "Leisure", "Culture", "Affairs", "Design"], // 5
+    ["Technologies", "Space", "Medical", "Sport", "Entertainment", "Historical", "Food", "Politics", "Business", "Graphics"], // 10
+    ["AI", "IoT", "Blockchain", "Astronomy", "Space Exploration", "Healthcare", "Pharmaceuticals", "Team Sports", "Individual Sports", "Movies", "Music", "Ancient History", "Modern History", "Culinary Arts", "Nutrition", "Government Policies", "Political Analysis", "Finance", "Corporate Strategies", "3D Design", "Visual Arts"], // 20
+    ["Machine Learning", "Deep Learning", "IoT Devices", "Smart Cities", "Blockchain Applications", "Crypto", "Planetary Science", "Astrobiology", "Space Missions", "Satellite Tech", "General Medicine", "Surgical Advances", "Drug Research", "Medical Devices", "Football", "Basketball", "Tennis", "Athletics", "Hollywood Movies", "Indie Films", "Classical Music", "Pop Music", "Ancient Civilizations", "Medieval History", "World Wars", "Postmodern History", "Gourmet Cuisine", "Street Food", "Diets", "Superfoods", "Public Policies", "Political Campaigns", "Global Politics", "Regional Politics", "Stock Market", "Investment Strategies", "Corporate Mergers", "Startups", "Digital Art", "Animation"] // 40
   ];
 
   const handleCSVFileChange = (event) => {
@@ -29,6 +33,7 @@ const TrainingPage = () => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         setClasses(prev => [...prev, ...stageClasses[nextStage]]);
         setDownloadCSVEnabled(true);
+        setIsTrainingComplete(true);
       }
     } catch (error) {
       console.error('Error training model:', error);
@@ -49,6 +54,30 @@ const TrainingPage = () => {
     const newClasses = [...classes];
     newClasses[index] = newName;
     setClasses(newClasses);
+  };
+
+  const handlePredictionFileChange = (event) => {
+    setPredictionFile(event.target.files[0]);
+  };
+
+  const handleStartPrediction = async () => {
+    if (!predictionFile) return;
+    setIsPredicting(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setShowPredictionDownload(true);
+    } finally {
+      setIsPredicting(false);
+    }
+  };
+
+  const handleRetrain = () => {
+    setIsTrainingComplete(false);
+    setCSVFile(null);
+    setPredictionFile(null);
+    setShowPredictionDownload(false);
+    setDownloadCSVEnabled(false);
+    setClasses([])
   };
 
   return (
@@ -100,89 +129,140 @@ const TrainingPage = () => {
       <div className="flex-1 overflow-auto scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700 hover:scrollbar-thumb-gray-600">
         <div className="p-8">
           <div className="mb-8">
-            <div className="text-gray-400 text-sm mb-2">Dashboard / Training</div>
-            <h1 className="text-4xl font-bold text-white mb-2">Train Your Model</h1>
-            <p className="text-gray-400">Upload your dataset and start training the classification model</p>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              {isTrainingComplete ? 'Make Predictions' : 'Train Your Model'}
+            </h1>
+            <p className="text-gray-400">
+              {isTrainingComplete
+                ? 'Upload documents to classify them using your trained model'
+                : 'Upload your dataset and start training the classification model'}
+            </p>
           </div>
 
           <div className="max-w-2xl mx-auto">
             <div className="bg-gray-800/50 rounded-xl p-8 backdrop-blur-sm shadow-xl border border-gray-700/50">
-              <div className="flex flex-col gap-6">
-                <div className="flex items-center justify-center w-full">
-                  <label
-                    htmlFor="csv-file"
-                    className="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-600 border-dashed rounded-xl cursor-pointer bg-gray-700/30 hover:bg-gray-700/50 transition-all"
-                  >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg className="w-8 h-8 mb-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                      </svg>
-                      <p className="mb-2 text-sm text-gray-400">
-                        <span className="font-semibold">Click to upload</span> or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-400">CSV files only</p>
-                      {csvFile && (
-                        <p className="mt-2 text-sm text-green-400">Selected: {csvFile.name}</p>
-                      )}
-                    </div>
-                    <input
-                      id="csv-file"
-                      type="file"
-                      accept=".csv"
-                      onChange={handleCSVFileChange}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-                <button
-                  onClick={handleStart}
-                  disabled={!csvFile}
-                  className={`w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all ${!csvFile ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02]'
-                    }`}
-                >
-                  {isLoading ? 'Training in Progress...' : 'Start Training'}
-                </button>
-              </div>
-
-              {isLoading && (
-                <div className="mt-8 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                  <div className="flex items-center gap-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-400"></div>
-                    <div>
-                      <h3 className="text-blue-400 font-medium">Training in Progress</h3>
-                      <p className="text-sm text-blue-300/70">This might take a few minutes...</p>
-                    </div>
+              {!isTrainingComplete ? (
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center justify-center w-full">
+                    <label
+                      htmlFor="csv-file"
+                      className="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-600 border-dashed rounded-xl cursor-pointer bg-gray-700/30 hover:bg-gray-700/50 transition-all"
+                    >
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg className="w-8 h-8 mb-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                        </svg>
+                        <p className="mb-2 text-sm text-gray-400">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-400">Any file</p>
+                        <p className="text-xs text-gray-400">Please Organize your classes into Folders</p>
+                        {csvFile && (
+                          <p className="mt-2 text-sm text-green-400">Selected: {csvFile.name}</p>
+                        )}
+                      </div>
+                      <input
+                        id="csv-file"
+                        type="file"
+                        accept="*"
+                        onChange={handleCSVFileChange}
+                        className="hidden"
+                      />
+                    </label>
                   </div>
+                  <button
+                    onClick={handleStart}
+                    disabled={!csvFile}
+                    className={`w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all ${!csvFile ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02]'
+                      }`}
+                  >
+                    {isLoading ? 'Training in Progress...' : 'Start Training'}
+                  </button>
                 </div>
-              )}
-
-              {downloadCSVEnabled && (
-                <>
-                  <div className="mt-8 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+              ) : (
+                <div className="flex flex-col gap-6">
+                  <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/20 mb-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-green-400 font-medium">Training Complete!</h3>
-                        <p className="text-sm text-green-300/70">Your model is ready to use</p>
+                        <h3 className="text-green-400 font-medium">Model Successfully Trained!</h3>
+                        <p className="text-sm text-green-300/70">You can start your predictions</p>
                       </div>
-                      <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all hover:scale-[1.02]">
-                        Download Results
-                      </button>
                     </div>
                   </div>
-                  <div className="mt-4 flex justify-center">
-                    <button 
-                      onClick={() => window.location.href = '/dashboard'} 
-                      className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:from-purple-600 hover:to-purple-700 transition-all hover:scale-[1.02]"
+
+                  <div className="flex items-center justify-center w-full">
+                    <label
+                      htmlFor="prediction-file"
+                      className="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-600 border-dashed rounded-xl cursor-pointer bg-gray-700/30 hover:bg-gray-700/50 transition-all"
                     >
-                      Proceed to Dashboard
-                    </button>
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg className="w-8 h-8 mb-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                        </svg>
+                        <p className="mb-2 text-sm text-gray-400">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-400">ZIP files only</p>
+                        {predictionFile && (
+                          <p className="mt-2 text-sm text-green-400">Selected: {predictionFile.name}</p>
+                        )}
+                      </div>
+                      <input
+                        id="prediction-file"
+                        type="file"
+                        accept=".zip"
+                        onChange={handlePredictionFileChange}
+                        className="hidden"
+                      />
+                    </label>
                   </div>
-                </>
+
+                  <button
+                    onClick={handleStartPrediction}
+                    disabled={!predictionFile || isPredicting}
+                    className={`w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all ${!predictionFile || isPredicting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02]'}`}
+                  >
+                    {isPredicting ? 'Processing...' : 'Start Prediction'}
+                  </button>
+
+                  {showPredictionDownload && (
+                    <div className="mt-4 space-y-4">
+                      <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-green-400 font-medium">Prediction Complete!</h3>
+                            <p className="text-sm text-green-300/70">Subcategorize your labels and reupload the documents</p>
+                          </div>
+                          <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all hover:scale-[1.02]">
+                            Download Results
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-4">
+                        <button
+                          onClick={handleRetrain}
+                          className="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:from-purple-600 hover:to-purple-700 transition-all hover:scale-[1.02]"
+                        >
+                          Retrain
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Fixed Dashboard Button */}
+      <button
+        onClick={() => window.location.href = '/dashboard'}
+        className="fixed bottom-8 right-8 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:from-indigo-600 hover:to-indigo-700 transition-all hover:scale-[1.02] z-50"
+      >
+        Proceed to Dashboard
+      </button>
     </div>
   );
 };
