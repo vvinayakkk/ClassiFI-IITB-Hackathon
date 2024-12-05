@@ -664,7 +664,7 @@ Return ONLY a valid JSON response with these exact keys and corresponding struct
 
             # Parse the analysis result
             parsed_analysis = parse_json_safely(analysis_result)
-
+            print("analysis is:",parsed_analysis)
             # Prepare response
             return JsonResponse({
                 'message': 'Document analysis completed successfully',
