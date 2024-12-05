@@ -13,47 +13,7 @@ const TrainingPage = () => {
   const [showPredictionDownload, setShowPredictionDownload] = useState(false);
 
 
-  const stageClasses = [
-    ["Innovative", "Leisure", "Culture", "Affairs", "Design"], // 5
-    ["Technologies", "Space", "Medical", "Sport", "Entertainment", "Historical", "Food", "Politics", "Business", "Graphics"], // 10
-    ["AI", "Blockchain", "Astronomy", "Space Exploration", "Healthcare", "Pharmaceuticals", "Team Sports", "Individual Sports", "Movies", "Music", "Ancient History", "Modern History", "Culinary Arts", "Nutrition", "Government Policies", "Political Analysis", "Finance", "Corporate Strategies", "3D Design", "Visual Arts"], // 20
-    ["Machine Learning", "Deep Learning", "IoT Devices", "Smart Cities", "Blockchain Applications", "Crypto", "Planetary Science", "Astrobiology", "Space Missions", "Satellite Tech", "General Medicine", "Surgical Advances", "Drug Research", "Medical Devices", "Football", "Basketball", "Tennis", "Athletics", "Hollywood Movies", "Indie Films", "Classical Music", "Pop Music", "Ancient Civilizations", "Medieval History", "World Wars", "Postmodern History", "Gourmet Cuisine", "Street Food", "Diets", "Superfoods", "Public Policies", "Political Campaigns", "Global Politics", "Regional Politics", "Stock Market", "Investment Strategies", "Corporate Mergers", "Startups", "Digital Art", "Animation"] // 40
-  ];
 
-  const stagePredictedFiles = [
-    // Stage 0 - Basic (5 classes)
-    [
-      { name: 'design_doc.pdf', predictedClass: 'Design' },
-      { name: 'culture_report.pdf', predictedClass: 'Culture' },
-      { name: 'leisure_activity.doc', predictedClass: 'Leisure' },
-      { name: 'innovative_proposal.pdf', predictedClass: 'Innovative' },
-      { name: 'affairs_summary.txt', predictedClass: 'Affairs' }
-    ],
-    // Stage 1 - Intermediate (10 classes)
-    [
-      { name: 'tech_specs.pdf', predictedClass: 'Technologies' },
-      { name: 'space_mission.pdf', predictedClass: 'Space' },
-      { name: 'medical_report.doc', predictedClass: 'Medical' },
-      { name: 'business_plan.pdf', predictedClass: 'Business' },
-      { name: 'sports_analysis.pdf', predictedClass: 'Sport' }
-    ],
-    // Stage 2 - Advanced (20 classes)
-    [
-      { name: 'ai_research.pdf', predictedClass: 'AI' },
-      { name: 'blockchain_whitepaper.pdf', predictedClass: 'Blockchain' },
-      { name: 'healthcare_study.doc', predictedClass: 'Healthcare' },
-      { name: 'financial_analysis.pdf', predictedClass: 'Finance' },
-      { name: 'art_portfolio.pdf', predictedClass: 'Visual Arts' }
-    ],
-    // Stage 3 - Expert (40 classes)
-    [
-      { name: 'ml_algorithm.pdf', predictedClass: 'Machine Learning' },
-      { name: 'crypto_analysis.pdf', predictedClass: 'Crypto' },
-      { name: 'medical_device_spec.doc', predictedClass: 'Medical Devices' },
-      { name: 'stock_report.pdf', predictedClass: 'Stock Market' },
-      { name: 'animation_project.pdf', predictedClass: 'Animation' }
-    ]
-  ];
 
   const handleCSVFileChange = (event) => {
     setCSVFile(event.target.files[0]);
