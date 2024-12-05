@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 const TrainingPage = () => {
   const [classes, setClasses] = useState([]);
+  const [predictedFiles, setPredictedFiles] = useState([]);
   const [csvFile, setCSVFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [downloadCSVEnabled, setDownloadCSVEnabled] = useState(false);
@@ -11,11 +12,47 @@ const TrainingPage = () => {
   const [isPredicting, setIsPredicting] = useState(false);
   const [showPredictionDownload, setShowPredictionDownload] = useState(false);
 
+
   const stageClasses = [
     ["Innovative", "Leisure", "Culture", "Affairs", "Design"], // 5
     ["Technologies", "Space", "Medical", "Sport", "Entertainment", "Historical", "Food", "Politics", "Business", "Graphics"], // 10
-    ["AI", "IoT", "Blockchain", "Astronomy", "Space Exploration", "Healthcare", "Pharmaceuticals", "Team Sports", "Individual Sports", "Movies", "Music", "Ancient History", "Modern History", "Culinary Arts", "Nutrition", "Government Policies", "Political Analysis", "Finance", "Corporate Strategies", "3D Design", "Visual Arts"], // 20
+    ["AI", "Blockchain", "Astronomy", "Space Exploration", "Healthcare", "Pharmaceuticals", "Team Sports", "Individual Sports", "Movies", "Music", "Ancient History", "Modern History", "Culinary Arts", "Nutrition", "Government Policies", "Political Analysis", "Finance", "Corporate Strategies", "3D Design", "Visual Arts"], // 20
     ["Machine Learning", "Deep Learning", "IoT Devices", "Smart Cities", "Blockchain Applications", "Crypto", "Planetary Science", "Astrobiology", "Space Missions", "Satellite Tech", "General Medicine", "Surgical Advances", "Drug Research", "Medical Devices", "Football", "Basketball", "Tennis", "Athletics", "Hollywood Movies", "Indie Films", "Classical Music", "Pop Music", "Ancient Civilizations", "Medieval History", "World Wars", "Postmodern History", "Gourmet Cuisine", "Street Food", "Diets", "Superfoods", "Public Policies", "Political Campaigns", "Global Politics", "Regional Politics", "Stock Market", "Investment Strategies", "Corporate Mergers", "Startups", "Digital Art", "Animation"] // 40
+  ];
+
+  const stagePredictedFiles = [
+    // Stage 0 - Basic (5 classes)
+    [
+      { name: 'design_doc.pdf', predictedClass: 'Design' },
+      { name: 'culture_report.pdf', predictedClass: 'Culture' },
+      { name: 'leisure_activity.doc', predictedClass: 'Leisure' },
+      { name: 'innovative_proposal.pdf', predictedClass: 'Innovative' },
+      { name: 'affairs_summary.txt', predictedClass: 'Affairs' }
+    ],
+    // Stage 1 - Intermediate (10 classes)
+    [
+      { name: 'tech_specs.pdf', predictedClass: 'Technologies' },
+      { name: 'space_mission.pdf', predictedClass: 'Space' },
+      { name: 'medical_report.doc', predictedClass: 'Medical' },
+      { name: 'business_plan.pdf', predictedClass: 'Business' },
+      { name: 'sports_analysis.pdf', predictedClass: 'Sport' }
+    ],
+    // Stage 2 - Advanced (20 classes)
+    [
+      { name: 'ai_research.pdf', predictedClass: 'AI' },
+      { name: 'blockchain_whitepaper.pdf', predictedClass: 'Blockchain' },
+      { name: 'healthcare_study.doc', predictedClass: 'Healthcare' },
+      { name: 'financial_analysis.pdf', predictedClass: 'Finance' },
+      { name: 'art_portfolio.pdf', predictedClass: 'Visual Arts' }
+    ],
+    // Stage 3 - Expert (40 classes)
+    [
+      { name: 'ml_algorithm.pdf', predictedClass: 'Machine Learning' },
+      { name: 'crypto_analysis.pdf', predictedClass: 'Crypto' },
+      { name: 'medical_device_spec.doc', predictedClass: 'Medical Devices' },
+      { name: 'stock_report.pdf', predictedClass: 'Stock Market' },
+      { name: 'animation_project.pdf', predictedClass: 'Animation' }
+    ]
   ];
 
   const handleCSVFileChange = (event) => {
@@ -32,6 +69,7 @@ const TrainingPage = () => {
         setCurrentStage(nextStage);
         await new Promise((resolve) => setTimeout(resolve, 2000));
         setClasses(prev => [...prev, ...stageClasses[nextStage]]);
+        setPredictedFiles(stagePredictedFiles[nextStage]); // Set stage-specific files
         setDownloadCSVEnabled(true);
         setIsTrainingComplete(true);
       }
@@ -78,6 +116,12 @@ const TrainingPage = () => {
     setShowPredictionDownload(false);
     setDownloadCSVEnabled(false);
     setClasses([])
+  };
+
+  const handleClassChange = (fileIndex, newClass) => {
+    const newPredictedFiles = [...predictedFiles];
+    newPredictedFiles[fileIndex].predictedClass = newClass;
+    setPredictedFiles(newPredictedFiles);
   };
 
   return (
@@ -231,11 +275,41 @@ const TrainingPage = () => {
                         <div className="flex items-center justify-between">
                           <div>
                             <h3 className="text-green-400 font-medium">Prediction Complete!</h3>
-                            <p className="text-sm text-green-300/70">Subcategorize your labels and reupload the documents</p>
+                            <p className="text-sm text-green-300/70">Review and adjust predictions if needed</p>
                           </div>
                           <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all hover:scale-[1.02]">
                             Download Results
                           </button>
+                        </div>
+                      </div>
+
+                      {/* Predicted Files List */}
+                      <div className="bg-gray-700/30 rounded-lg p-4">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-white font-medium">Predicted Files</h3>
+                          <div className="text-sm bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-3 py-1.5 rounded-full font-medium transition-all">
+                            Download Results CSV to edit more files
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          {predictedFiles.map((file, index) => (
+                            <div key={index} className="flex items-center justify-between bg-gray-800/50 p-3 rounded-lg">
+                              <span className="text-gray-300">{file.name}</span>
+                              <div className="flex items-center gap-4">
+                                <select
+                                  onChange={(e) => handleClassChange(index, e.target.value)}
+                                  className="bg-gray-700 text-white px-3 py-1 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                  value={file.predictedClass}
+                                >
+                                  {classes.map((cls) => (
+                                    <option key={cls} value={cls}>
+                                      {cls}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
