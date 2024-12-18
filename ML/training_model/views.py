@@ -285,7 +285,7 @@ def train_classification_view(request):
             training_df = classifier.process_zip_file(full_file_path)
 
             # Train the model
-            base_model_path = os.path.join(settings.BASE_DIR, 'models')
+            base_model_path = os.path.join(settings.BASE_DIR, 'models2')
             os.makedirs(base_model_path, exist_ok=True)
             
             model, tokenizer, label_mapping, model_path = train_document_classifier(
@@ -304,8 +304,197 @@ def train_classification_view(request):
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 @csrf_exempt
 def predict_classification_view(request):
+    """
+    View to handle prediction on uploaded zip file of text files using Gemini
+    Supports multiple document types within the zip file
+    """
+    if request.method == 'POST':
+        try:
+            # Get uploaded zip file
+            zip_file = request.FILES.get('file')
+            if not zip_file:
+                return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+            # Save file temporarily
+            file_path = default_storage.save('uploads/prediction_data.zip', zip_file)
+            full_file_path = os.path.join(settings.MEDIA_ROOT, file_path)
+
+            # Find all model directories
+            models_dir = os.path.join(settings.BASE_DIR, 'models')
+            if not os.path.exists(models_dir):
+                return JsonResponse({
+                    'error': 'No trained models found. Please train a model first.'
+                }, status=400)
+
+            # Get all model folders 
+            model_folders = [
+                f for f in os.listdir(models_dir) 
+                if os.path.isdir(os.path.join(models_dir, f)) 
+                and os.path.exists(os.path.join(models_dir, f, 'label_mapping.json'))
+            ]
+            
+            if not model_folders:
+                return JsonResponse({
+                    'error': 'No valid models found. Please train a model first.'
+                }, status=400)
+
+            # Initialize Gemini model
+            try:
+                gemini_model = ChatGoogleGenerativeAI(
+                    model="gemini-pro", 
+                    google_api_key=os.environ.get('GOOGLE_API_KEY')
+                )
+            except Exception as e:
+                return JsonResponse({
+                    'error': 'Failed to initialize Gemini model. Check API key configuration.'
+                }, status=500)
+
+            # Create a temporary directory to extract files
+            temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp_prediction')
+            os.makedirs(temp_dir, exist_ok=True)
+
+            # Extract zip file
+            with zipfile.ZipFile(full_file_path, 'r') as zip_ref:
+                zip_ref.extractall(temp_dir)
+
+            # Prepare prediction results
+            prediction_results = []
+
+            # Process each file in the temporary directory
+            for filename in os.listdir(temp_dir):
+                file_path = os.path.join(temp_dir, filename)
+                
+                # Try to extract text from the file
+                try:
+                    with open(file_path, 'rb') as file_obj:
+                        text_content = extract_text_from_file(file_obj)
+                    
+                    # Truncate very long documents
+                    max_length = 10000
+                    if len(text_content) > max_length:
+                        text_content = text_content[:max_length] + "\n\n[... document truncated for analysis]"
+                
+                except ValueError as e:
+                    # Skip files that can't be processed
+                    print(f"Skipping {filename}: {str(e)}")
+                    continue
+
+                # Process file through each model's label mapping
+                file_predictions = []
+                for model_folder in model_folders:
+                    try:
+                        # Load label mapping
+                        mapping_path = os.path.join(models_dir, model_folder, 'label_mapping.json')
+                        with open(mapping_path, 'r') as f:
+                            label_mapping = json.load(f)
+
+                        # Prepare prompt for Gemini
+                        prompt_template = PromptTemplate(
+                            input_variables=['text', 'categories'],
+                            template="""You are an expert document classifier. 
+                            Carefully analyze the following document and predict the most appropriate category.
+
+                            Available Categories: {categories}
+
+                            Document Content (truncated if very long):
+                            {text}
+
+                            Prediction Instructions:
+                            1. Read the entire document carefully
+                            2. Consider the document's main topic, purpose, and content
+                            3. Match the document to the MOST RELEVANT category
+                            4. Provide a brief 1-2 sentence explanation for your choice
+
+                            Predicted Category (ONLY category name, no additional text):"""
+                        )
+
+                        # Create LLM chain
+                        llm_chain = LLMChain(
+                            llm=gemini_model, 
+                            prompt=prompt_template
+                        )
+
+                        # Generate prediction
+                        categories = list(label_mapping.keys())
+                        categories_str = ', '.join(categories)
+                        
+                        prediction_result = llm_chain.run(
+                            text=text_content, 
+                            categories=categories_str
+                        ).strip()
+
+                        # Fuzzy matching to handle slight variations
+                        def find_best_match(prediction, categories):
+                            # Exact match
+                            if prediction in categories:
+                                return prediction
+                            
+                            # Case-insensitive match
+                            lower_prediction = prediction.lower()
+                            for cat in categories:
+                                if lower_prediction == cat.lower():
+                                    return cat
+                            
+                            # Closest match by similarity
+                            best_match = min(
+                                categories, 
+                                key=lambda cat: abs(len(cat) - len(prediction))
+                            )
+                            return best_match
+
+                        best_match = find_best_match(prediction_result, categories)
+
+                        file_predictions.append({
+                            'model': model_folder,
+                            'predicted_category': best_match,
+                            'gemini_response': prediction_result
+                        })
+
+                    except Exception as model_error:
+                        # Log the error but continue with other models
+                        print(f"Error processing model {model_folder}: {str(model_error)}")
+                        continue
+
+                # Store prediction result for this file
+                prediction_results.append({
+                    'filename': filename,
+                    'text': text_content[:500] + '...' if len(text_content) > 500 else text_content,
+                    'predictions': file_predictions
+                })
+
+            # Clean up temporary directory
+            shutil.rmtree(temp_dir)
+
+            # Create results directory
+            results_dir = os.path.join(settings.MEDIA_ROOT, 'prediction_results')
+            os.makedirs(results_dir, exist_ok=True)
+
+            # Create timestamped results file
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            results_filename = f'prediction_results_{timestamp}.csv'
+            results_path = os.path.join(results_dir, results_filename)
+
+            # Save results to CSV
+            results_df = pd.DataFrame(prediction_results)
+            results_df.to_csv(results_path, index=False)
+
+            return JsonResponse({
+                'message': 'Prediction completed successfully',
+                'total_files': len(prediction_results),
+                'results_file': results_filename,
+                'used_models': model_folders,
+                'predictions': prediction_results
+            })
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)    
+@csrf_exempt
+def predict_classification_view2(request):
     """
     View to handle prediction on uploaded zip file of text files without predefined labels
     """
@@ -320,14 +509,41 @@ def predict_classification_view(request):
             file_path = default_storage.save('uploads/prediction_data.zip', zip_file)
             full_file_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
-            # Initialize classifier
-            classifier = DocumentClassificationView()
-            
-            # Check if model is trained
-            if classifier.model is None:
+            # Find the most recently trained model
+            models_dir = os.path.join(settings.BASE_DIR, 'models')
+            if not os.path.exists(models_dir):
                 return JsonResponse({
-                    'error': 'No trained model found. Please train a model first.'
+                    'error': 'No trained models found. Please train a model first.'
                 }, status=400)
+
+            # Get all model folders and find the most recent one
+            model_folders = [
+                f for f in os.listdir(models_dir) 
+                if os.path.isdir(os.path.join(models_dir, f)) 
+                and 'config.json' in os.listdir(os.path.join(models_dir, f))
+            ]
+            
+            if not model_folders:
+                return JsonResponse({
+                    'error': 'No valid models found. Please train a model first.'
+                }, status=400)
+
+            # Sort model folders by timestamp (newest first)
+            model_folders.sort(reverse=True)
+            latest_model_folder = model_folders[0]
+            full_model_path = os.path.join(models_dir, latest_model_folder)
+
+            # Load tokenizer and model
+            tokenizer = BertTokenizer.from_pretrained(full_model_path)
+            model = BertForSequenceClassification.from_pretrained(full_model_path)
+            model.eval()
+
+            # Load label mapping
+            label_mapping = None
+            mapping_path = os.path.join(full_model_path, 'label_mapping.json')
+            if os.path.exists(mapping_path):
+                with open(mapping_path, 'r') as f:
+                    label_mapping = json.load(f)
 
             # Create a temporary directory to extract files
             temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp_prediction')
@@ -349,8 +565,30 @@ def predict_classification_view(request):
                     with open(file_path, 'r', encoding='utf-8') as f:
                         text_content = f.read()
                     
-                    # Predict category
-                    predicted_category = classifier.predict_document_category(text_content)
+                    # Tokenize input
+                    inputs = tokenizer(
+                        text_content, 
+                        return_tensors="pt", 
+                        truncation=True, 
+                        padding=True, 
+                        max_length=512
+                    )
+                    
+                    # Predict
+                    with torch.no_grad():
+                        outputs = model(**inputs)
+                        logits = outputs.logits
+                    
+                    predicted_class_id = torch.argmax(logits, dim=1).item()
+                    
+                    # Determine predicted category
+                    if label_mapping:
+                        # If label mapping exists, use it
+                        reverse_mapping = {v: k for k, v in label_mapping.items()}
+                        predicted_category = reverse_mapping[predicted_class_id]
+                    else:
+                        # Fallback if no label mapping
+                        predicted_category = f"Category {predicted_class_id}"
                     
                     # Store prediction result
                     prediction_results.append({
@@ -379,19 +617,180 @@ def predict_classification_view(request):
                 'message': 'Prediction completed successfully',
                 'total_files': len(prediction_results),
                 'results_file': results_filename,
+                'used_model': latest_model_folder,
                 'predictions': prediction_results
             })
 
-        except ValueError as ve:
-            # Specific error if model is not usable
-            return JsonResponse({'error': str(ve)}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+import os
+import json
+import torch
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+
+@csrf_exempt
+def predict_single_document_view(request):
+    """
+    View to handle prediction for a single uploaded document using Gemini across all label mappings
+    Supports multiple document types: txt, pdf, docx, doc, csv, json
+    """
+    if request.method == 'POST':
+        try:
+            # Get uploaded file
+            uploaded_file = request.FILES.get('file')
+            if not uploaded_file:
+                return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+            # Extract text from the document
+            try:
+                file_content = extract_text_from_file(uploaded_file)
+                
+                # Truncate very long documents to prevent API limitations
+                max_length = 10000  # Adjust as needed
+                if len(file_content) > max_length:
+                    file_content = file_content[:max_length] + "\n\n[... document truncated for analysis]"
+            
+            except ValueError as e:
+                return JsonResponse({'error': str(e)}, status=400)
+
+            # Validate extracted content
+            if not file_content or file_content.strip() == '':
+                return JsonResponse({
+                    'error': 'Could not extract any meaningful text from the document'
+                }, status=400)
+
+            # Initialize Gemini model
+            try:
+                gemini_model = ChatGoogleGenerativeAI(
+                    model="gemini-pro", 
+                    google_api_key=os.environ.get('GOOGLE_API_KEY')
+                )
+            except Exception as e:
+                return JsonResponse({
+                    'error': 'Failed to initialize Gemini model. Check API key configuration.'
+                }, status=500)
+
+            # Find all model directories with label mappings
+            models_dir = os.path.join(settings.BASE_DIR, 'models')
+            model_predictions = []
+
+            # Check if models directory exists
+            if not os.path.exists(models_dir):
+                return JsonResponse({
+                    'error': 'No trained models found. Please train a model first.'
+                }, status=400)
+
+            # Iterate through model directories
+            for model_folder in os.listdir(models_dir):
+                full_model_path = os.path.join(models_dir, model_folder)
+                
+                # Check if it's a valid model directory with label mapping
+                mapping_path = os.path.join(full_model_path, 'label_mapping.json')
+                if os.path.isdir(full_model_path) and os.path.exists(mapping_path):
+                    try:
+                        # Load label mapping
+                        with open(mapping_path, 'r') as f:
+                            label_mapping = json.load(f)
+
+                        # Prepare prompt for Gemini with more detailed instructions
+                        prompt_template = PromptTemplate(
+                            input_variables=['text', 'categories'],
+                            template="""You are an expert document classifier. 
+                            Carefully analyze the following document and predict the most appropriate category.
+
+                            Available Categories: {categories}
+
+                            Document Content (truncated if very long):
+                            {text}
+
+                            Prediction Instructions:
+                            1. Read the entire document carefully
+                            2. Consider the document's main topic, purpose, and content
+                            3. Match the document to the MOST RELEVANT category
+                            4. Provide a brief 1-2 sentence explanation for your choice
+
+                            Predicted Category (ONLY category name, no additional text):"""
+                        )
+
+                        # Create LLM chain
+                        llm_chain = LLMChain(
+                            llm=gemini_model, 
+                            prompt=prompt_template
+                        )
+
+                        # Generate prediction
+                        categories = list(label_mapping.keys())
+                        categories_str = ', '.join(categories)
+                        
+                        prediction_result = llm_chain.run(
+                            text=file_content, 
+                            categories=categories_str
+                        ).strip()
+
+                        # Fuzzy matching to handle slight variations
+                        def find_best_match(prediction, categories):
+                            # Exact match
+                            if prediction in categories:
+                                return prediction
+                            
+                            # Case-insensitive match
+                            lower_prediction = prediction.lower()
+                            for cat in categories:
+                                if lower_prediction == cat.lower():
+                                    return cat
+                            
+                            # Closest match by similarity
+                            best_match = min(
+                                categories, 
+                                key=lambda cat: abs(len(cat) - len(prediction))
+                            )
+                            return best_match
+
+                        best_match = find_best_match(prediction_result, categories)
+
+                        model_predictions.append({
+                            'model': model_folder,
+                            'predicted_category': best_match,
+                            'Response': prediction_result
+                        })
+
+                    except Exception as model_error:
+                        # Log the error but continue with other models
+                        print(f"Error processing model {model_folder}: {str(model_error)}")
+                        continue
+
+            # If no predictions found
+            if not model_predictions:
+                return JsonResponse({
+                    'error': 'No predictions could be made. Check model configurations.'
+                }, status=400)
+
+            # Prepare response
+            return JsonResponse({
+                'message': 'Document category predicted successfully using Gemini',
+                'filename': uploaded_file.name,
+                'file_type': os.path.splitext(uploaded_file.name)[1],
+                'predictions': model_predictions,
+                'document_preview': file_content[:500] + '...' if len(file_content) > 500 else file_content
+            })
+
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
-def predict_single_document_view(request):
+def predict_single_document_view2(request):
     """
     View to handle prediction for a single uploaded document across all trained models
     """
@@ -419,16 +818,19 @@ def predict_single_document_view(request):
                     full_model_path = os.path.join(models_dir, model_folder)
                     
                     # Check if it's a valid model directory
-                    if os.path.isdir(full_model_path) and 'label_mapping.json' in os.listdir(full_model_path):
+                    if os.path.isdir(full_model_path) and 'config.json' in os.listdir(full_model_path):
                         try:
                             # Load tokenizer and model
                             tokenizer = BertTokenizer.from_pretrained(full_model_path)
                             model = BertForSequenceClassification.from_pretrained(full_model_path)
                             model.eval()
 
-                            # Load label mapping
-                            with open(os.path.join(full_model_path, 'label_mapping.json'), 'r') as f:
-                                label_mapping = json.load(f)
+                            # Attempt to load label mapping
+                            label_mapping = None
+                            mapping_path = os.path.join(full_model_path, 'label_mapping.json')
+                            if os.path.exists(mapping_path):
+                                with open(mapping_path, 'r') as f:
+                                    label_mapping = json.load(f)
 
                             # Tokenize input
                             inputs = tokenizer(
@@ -446,9 +848,14 @@ def predict_single_document_view(request):
                             
                             predicted_class_id = torch.argmax(logits, dim=1).item()
                             
-                            # Reverse lookup category name from ID
-                            reverse_mapping = {v: k for k, v in label_mapping.items()}
-                            predicted_category = reverse_mapping[predicted_class_id]
+                            # Determine predicted category
+                            if label_mapping:
+                                # If label mapping exists, use it
+                                reverse_mapping = {v: k for k, v in label_mapping.items()}
+                                predicted_category = reverse_mapping[predicted_class_id]
+                            else:
+                                # Fallback if no label mapping
+                                predicted_category = f"Category {predicted_class_id}"
 
                             model_predictions.append({
                                 'model': model_folder,
@@ -473,14 +880,10 @@ def predict_single_document_view(request):
                 'predictions': model_predictions
             })
 
-        except ValueError as ve:
-            # Specific error if model is not trained
-            return JsonResponse({'error': str(ve)}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Invalid request method'}, status=405)
-
 
 
 def extract_text_from_file(uploaded_file):
