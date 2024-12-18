@@ -22,29 +22,29 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState(new Map());
 
-  const processDocumentWithModel = async (file, modelNumber) => {
+  const processDocumentWithModel = async (file) => {
     const formData = new FormData();
-    formData.append('resume', file);
+    formData.append('file', file);
 
     try {
-      const response = await fetch(`${SERVER_URL}/api/upload-resume${modelNumber}/`, {
+      const response = await fetch(`${SERVER_URL}/api/uploadsingle/`, {
         method: 'POST',
         body: formData
       });
 
       if (!response.ok) {
-        throw new Error(`Model ${modelNumber} failed: ${response.statusText}`);
+        throw new Error(`Upload failed: ${response.statusText}`);
       }
 
       const data = await response.json();
       if (data.status === 'failed') {
-        throw new Error(`Model ${modelNumber} processing failed`);
+        throw new Error('Document processing failed');
       }
-      console.log(`Model ${modelNumber} processed successfully`);
+      console.log('Document processed successfully');
       console.log(data);
       return data;
     } catch (error) {
-      setError(`Model ${modelNumber}: ${error.message}`);
+      setError(error.message);
       return null;
     }
   };
@@ -58,13 +58,11 @@ const Dashboard = () => {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      // Validate file size (e.g., max 10MB)
+      // File validations
       if (file.size > 10 * 1024 * 1024) {
         setError("File size exceeds 10MB limit");
         return;
       }
-
-      // Validate file type
       if (!file.type.includes('pdf')) {
         setError("Only PDF files are allowed");
         return;
@@ -73,29 +71,32 @@ const Dashboard = () => {
       setError(null);
       setIsProcessing(true);
       setShowResults(false);
-      const results = {
-        modelResponses: [],
-        finalClassification: '',
-        overallConfidence: 0
-      };
 
       try {
-        // Process with all models
-        for (let i = 1; i <= 5; i++) {
-          const response = await processDocumentWithModel(file, i);
-          if (!response) {
-            throw new Error(`Processing failed at model ${i}`);
-          }
-
-          results.modelResponses.push({
-            model: i,
-            category: response.category,
-            confidence: Math.floor(Math.random() * 15) + 85 // Simulated confidence 85-100%
-          });
+        const response = await processDocumentWithModel(file);
+        if (!response) {
+          throw new Error("Processing failed");
         }
 
-        if (results.modelResponses.length === 0) {
-          throw new Error("No model responses received");
+        const results = {
+          modelResponses: [],
+          finalClassification: '',
+          overallConfidence: 0
+        };
+
+        // Process predictions sequentially with delays
+        for (let i = 0; i < response.predictions.length; i++) {
+          await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay between each
+          const prediction = response.predictions[i];
+          
+          results.modelResponses.push({
+            model: prediction.model,
+            category: prediction.predicted_category,
+            confidence: Math.floor(Math.random() * 15) + 85 // Simulated confidence
+          });
+
+          // Update processing results for each prediction
+          setProcessingResults({...results});
         }
 
         // Calculate final classification (most common category)
@@ -106,38 +107,36 @@ const Dashboard = () => {
 
         results.finalClassification = mostCommon;
         results.overallConfidence = Math.floor(
-          results.modelResponses.reduce((acc, curr) => acc + curr.confidence, 0) / 5
+          results.modelResponses.reduce((acc, curr) => acc + curr.confidence, 0) / results.modelResponses.length
         );
 
         // Update uploads list
         const newUpload = {
           id: Date.now(),
-          name: file.name,
+          name: response.filename,
           status: `Classified as: ${results.finalClassification}`,
           time: "Just now",
           confidence: results.overallConfidence,
           skills: ["JavaScript", "React", "Node.js"]
         };
         
-        // Store the file in the Map
         const updatedMap = new Map(uploadedFiles).set(newUpload.id, file);
         setUploadedFiles(updatedMap);
         window.uploadedFiles = updatedMap;
         
         setRecentUploads(prev => [newUpload, ...prev]);
         setProcessingResults(results);
-        setShowResults(true);  // Set this to true after successful processing
+        setShowResults(true);
+
       } catch (error) {
         setError(error.message);
         setProcessingResults(null);
       } finally {
         setTimeout(() => {
           setIsProcessing(false);
-          // Keep showing results for 4 more seconds
           setTimeout(() => {
             setShowResults(false);
           }, 4000);
-          // Clear error after 5 seconds if there is one
           if (error) {
             setTimeout(() => setError(null), 5000);
           }
