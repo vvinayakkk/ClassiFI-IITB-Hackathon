@@ -126,7 +126,6 @@ def classify_resume1(request):
             predicted_category = predict_resume_category(resume_text)
             
             # Override the predicted category with "Innovative"
-            predicted_category = "Innovative"
             
             # Return prediction
             return JsonResponse({

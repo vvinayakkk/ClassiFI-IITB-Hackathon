@@ -197,6 +197,16 @@ def classify_resume5(request):
             }, status=400)
         
         try:
+            predicted_category = predict_resume_category(resume_file)
+            
+            # Override the predicted category with "Innovative"
+            
+            # Return prediction
+            return JsonResponse({
+                'category': predicted_category,
+                'status': 'success'
+            })
+        
             # Always return INFORMATION-TECHNOLOGY category
             return JsonResponse({
                 'category': 'Decentralised Finance',
