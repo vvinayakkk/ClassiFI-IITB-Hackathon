@@ -1,3 +1,5 @@
+## 🏆 **IITB CLASSIFI Hackathon Winning Project**
+
 # 🧠 Machine Learning Evolution: Training the Brain of ClassifyMe.ai
 
 ClassifyMe.ai’s success hinges on a robust, multi-stage machine learning pipeline. This pipeline has allowed the system to not only classify Documents accurately but to also evolve over time, learning from its mistakes and improving with every interaction. Below is the detailed journey of fine-tuning and adapting a pre-trained model to handle the complex task of Document classification.
