@@ -152,8 +152,8 @@ def classify_resume2(request):
                 }, status=400)
             
             # Predict category
-           # predicted_category = predict_resume_category(resume_text)
-            predicted_category= "technologies"
+            predicted_category = predict_resume_category(resume_text)
+            
             # Return prediction
             return JsonResponse({
                 'category': predicted_category,
